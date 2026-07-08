@@ -15,6 +15,7 @@ import StatusMultiSelect from '@/components/ui/status-multi-select'
 import StreamingProviderMultiSelect from '@/components/ui/streaming-provider-multi-select'
 import { TmdbRegionSelector } from '@/components/ui/tmdb-region-selector'
 import UserMultiSelect from '@/components/ui/user-multi-select'
+import { ValueGroupPickerControls } from '@/components/ui/value-group-picker-controls'
 import ImdbRatingInput from '@/features/content-router/components/imdb-rating-input'
 import RatingInput from '@/features/content-router/components/rating-input'
 import { StableNumberInput } from '@/features/content-router/components/stable-number-input'
@@ -452,12 +453,21 @@ function ConditionInput({
     // or equals when already multi-value
     const genreField = createGenreFormField()
     return (
-      <div className="flex-1">
-        <GenreMultiSelect
-          field={genreField}
-          genres={genres}
-          onDropdownOpen={onGenreDropdownOpen}
-        />
+      <div className="flex items-start gap-2 flex-1">
+        <div className="flex-1">
+          <GenreMultiSelect
+            field={genreField}
+            genres={genres}
+            onDropdownOpen={onGenreDropdownOpen}
+          />
+        </div>
+        {(operator === 'in' || operator === 'notIn') && (
+          <ValueGroupPickerControls
+            fieldType="genre"
+            values={genreField.value}
+            onLoadGroup={(loaded) => onChangeRef.current(loaded)}
+          />
+        )}
       </div>
     )
   }
@@ -469,8 +479,15 @@ function ConditionInput({
     return (
       <div className="space-y-3 flex-1">
         {/* Provider multi-select */}
-        <div>
-          <StreamingProviderMultiSelect field={streamingField} />
+        <div className="flex items-start gap-2">
+          <div className="flex-1">
+            <StreamingProviderMultiSelect field={streamingField} />
+          </div>
+          <ValueGroupPickerControls
+            fieldType="streamingServices"
+            values={streamingField.value}
+            onLoadGroup={(loaded) => onChangeRef.current(loaded)}
+          />
         </div>
 
         {/* Region selector */}
@@ -577,8 +594,17 @@ function ConditionInput({
     // For multi-select operators (in) or when we already have multiple values
     const userField = createFormField('user', isNumeric)
     return (
-      <div className="flex-1">
-        <UserMultiSelect field={userField} />
+      <div className="flex items-start gap-2 flex-1">
+        <div className="flex-1">
+          <UserMultiSelect field={userField} />
+        </div>
+        {(operator === 'in' || operator === 'notIn') && (
+          <ValueGroupPickerControls
+            fieldType="user"
+            values={userField.value}
+            onLoadGroup={(loaded) => onChangeRef.current(loaded)}
+          />
+        )}
       </div>
     )
   }
@@ -648,8 +674,15 @@ function ConditionInput({
       const certificationField = createCertificationFormField()
 
       return (
-        <div className="flex-1">
-          <CertificationMultiSelect field={certificationField} />
+        <div className="flex items-start gap-2 flex-1">
+          <div className="flex-1">
+            <CertificationMultiSelect field={certificationField} />
+          </div>
+          <ValueGroupPickerControls
+            fieldType="certification"
+            values={certificationField.value}
+            onLoadGroup={(loaded) => onChangeRef.current(loaded)}
+          />
         </div>
       )
     }
@@ -755,11 +788,18 @@ function ConditionInput({
       )
 
       return (
-        <div className="flex-1">
-          <StatusMultiSelect
-            field={statusField}
-            options={statusOptions}
-            placeholder={`Select ${field === 'seriesStatus' ? 'series' : 'movie'} status(es)`}
+        <div className="flex items-start gap-2 flex-1">
+          <div className="flex-1">
+            <StatusMultiSelect
+              field={statusField}
+              options={statusOptions}
+              placeholder={`Select ${field === 'seriesStatus' ? 'series' : 'movie'} status(es)`}
+            />
+          </div>
+          <ValueGroupPickerControls
+            fieldType={field as 'seriesStatus' | 'movieStatus'}
+            values={statusField.value}
+            onLoadGroup={(loaded) => onChangeRef.current(loaded)}
           />
         </div>
       )
